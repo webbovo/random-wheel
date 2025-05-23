@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Random Wheel</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,7 +11,7 @@
       background-color: #f4f4f4;
     }
     .container {
-      margin-top: 50px;
+      margin-top: 30px;
     }
     #wheelCanvas {
       border: 4px solid #333;
@@ -20,41 +19,53 @@
       margin: 20px auto;
       display: block;
     }
-    #spinButton {
+    button {
       padding: 10px 20px;
       font-size: 18px;
-      background-color: #28a745;
+      background-color: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 10px;
     }
-    #spinButton:hover {
-      background-color: #218838;
+    button:hover {
+      background-color: #0056b3;
     }
     #result {
       font-size: 24px;
       margin-top: 20px;
       color: #333;
     }
+    #optionsInput {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Random Wheel</h1>
+    <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br>
+    <button onclick="updateOptions()">Update Wheel</button>
     <canvas id="wheelCanvas" width="500" height="500"></canvas>
     <button id="spinButton">Spin the Wheel</button>
     <p id="result"></p>
   </div>
 
   <script>
-    const options = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
+    let options = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
     const canvas = document.getElementById("wheelCanvas");
     const ctx = canvas.getContext("2d");
-    const numSegments = options.length;
-    const anglePerSegment = (2 * Math.PI) / numSegments;
+    let numSegments = options.length;
+    let anglePerSegment = (2 * Math.PI) / numSegments;
+    let angle = 0;
+    let spinning = false;
 
     function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
@@ -73,8 +84,15 @@
       }
     }
 
-    let angle = 0;
-    let spinning = false;
+    function drawRotatedWheel(rotationAngle) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(250, 250);
+      ctx.rotate((rotationAngle * Math.PI) / 180);
+      ctx.translate(-250, -250);
+      drawWheel();
+      ctx.restore();
+    }
 
     function spinWheel() {
       if (spinning) return;
@@ -101,18 +119,22 @@
       requestAnimationFrame(animate);
     }
 
-    function drawRotatedWheel(rotationAngle) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.translate(250, 250);
-      ctx.rotate((rotationAngle * Math.PI) / 180);
-      ctx.translate(-250, -250);
-      drawWheel();
-      ctx.restore();
-    }
-
     function easeOutCubic(t) {
       return 1 - Math.pow(1 - t, 3);
+    }
+
+    function updateOptions() {
+      const input = document.getElementById("optionsInput").value;
+      const newOptions = input.split(",").map(opt => opt.trim()).filter(opt => opt);
+      if (newOptions.length >= 2) {
+        options = newOptions;
+        numSegments = options.length;
+        anglePerSegment = (2 * Math.PI) / numSegments;
+        drawWheel();
+        document.getElementById("result").innerText = "";
+      } else {
+        alert("Please enter at least 2 options, separated by commas.");
+      }
     }
 
     drawWheel();
@@ -120,3 +142,4 @@
   </script>
 </body>
 </html>
+
