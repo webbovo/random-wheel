@@ -56,13 +56,29 @@
   </div>
 
   <script>
-    let options = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
+    let options = [];
     const canvas = document.getElementById("wheelCanvas");
     const ctx = canvas.getContext("2d");
-    let numSegments = options.length;
-    let anglePerSegment = (2 * Math.PI) / numSegments;
+    let numSegments = 0;
+    let anglePerSegment = 0;
     let angle = 0;
     let spinning = false;
+
+    function saveOptions() {
+      localStorage.setItem("wheelOptions", JSON.stringify(options));
+    }
+
+    function loadOptions() {
+      const saved = localStorage.getItem("wheelOptions");
+      if (saved) {
+        options = JSON.parse(saved);
+      } else {
+        options = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
+      }
+      numSegments = options.length;
+      anglePerSegment = (2 * Math.PI) / numSegments;
+      document.getElementById("optionsInput").value = options.join(", ");
+    }
 
     function drawWheel() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -131,12 +147,14 @@
         numSegments = options.length;
         anglePerSegment = (2 * Math.PI) / numSegments;
         drawWheel();
+        saveOptions();
         document.getElementById("result").innerText = "";
       } else {
         alert("Please enter at least 2 options, separated by commas.");
       }
     }
 
+    loadOptions();
     drawWheel();
     document.getElementById("spinButton").addEventListener("click", spinWheel);
   </script>
