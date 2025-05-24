@@ -16,7 +16,7 @@
     #wheelCanvas {
       border: 4px solid #333;
       border-radius: 50%;
-      margin: 20px auto;
+      margin: 40px auto 20px auto;
       display: block;
     }
     button {
@@ -83,9 +83,9 @@
     function drawArrow() {
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
-      ctx.moveTo(250, 20);     // punta della freccia
-      ctx.lineTo(235, 60);     // angolo sinistro
-      ctx.lineTo(265, 60);     // angolo destro
+      ctx.moveTo(250, 10);     // punta
+      ctx.lineTo(230, 50);     // sinistra
+      ctx.lineTo(270, 50);     // destra
       ctx.closePath();
       ctx.fill();
     }
@@ -94,30 +94,30 @@
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
-        ctx.moveTo(250, 250);
-        ctx.arc(250, 250, 250, angle, angle + anglePerSegment);
+        ctx.moveTo(250, 270);
+        ctx.arc(250, 270, 230, angle, angle + anglePerSegment);
         ctx.fillStyle = `hsl(${(i * 360) / numSegments}, 100%, 75%)`;
         ctx.fill();
         ctx.save();
-        ctx.translate(250, 250);
+        ctx.translate(250, 270);
         ctx.rotate(angle + anglePerSegment / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
         ctx.font = "bold 16px Arial";
-        ctx.fillText(options[i], 230, 10);
+        ctx.fillText(options[i], 210, 10);
         ctx.restore();
       }
     }
 
     function drawAll(rotationAngle) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawArrow();
       ctx.save();
-      ctx.translate(250, 250);
+      ctx.translate(250, 270);
       ctx.rotate((rotationAngle * Math.PI) / 180);
-      ctx.translate(-250, -250);
+      ctx.translate(-250, -270);
       drawWheel();
       ctx.restore();
-      drawArrow();
     }
 
     function spinWheel() {
