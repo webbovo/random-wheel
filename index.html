@@ -50,7 +50,14 @@
     <h1>Random Wheel</h1>
     <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br>
     <button onclick="updateOptions()">Update Wheel</button>
-    <canvas id="wheelCanvas" width="500" height="500"></canvas>
+    <div style="position: relative; width: 500px; margin: 0 auto;">
+      <canvas id="wheelCanvas" width="500" height="550"></canvas>
+      <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10;">
+        <svg width="30" height="30">
+          <polygon points="15,0 0,30 30,30" fill="#e74c3c" />
+        </svg>
+      </div>
+    </div>
     <button id="spinButton">Spin the Wheel</button>
     <p id="result"></p>
   </div>
@@ -80,26 +87,16 @@
       document.getElementById("optionsInput").value = options.join(", ");
     }
 
-    function drawArrow() {
-      ctx.fillStyle = "#e74c3c";
-      ctx.beginPath();
-      ctx.moveTo(250, 10);     // punta
-      ctx.lineTo(230, 50);     // sinistra
-      ctx.lineTo(270, 50);     // destra
-      ctx.closePath();
-      ctx.fill();
-    }
-
     function drawWheel() {
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
-        ctx.moveTo(250, 270);
-        ctx.arc(250, 270, 230, angle, angle + anglePerSegment);
+        ctx.moveTo(250, 300);
+        ctx.arc(250, 300, 230, angle, angle + anglePerSegment);
         ctx.fillStyle = `hsl(${(i * 360) / numSegments}, 100%, 75%)`;
         ctx.fill();
         ctx.save();
-        ctx.translate(250, 270);
+        ctx.translate(250, 300);
         ctx.rotate(angle + anglePerSegment / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
@@ -111,11 +108,10 @@
 
     function drawAll(rotationAngle) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawArrow();
       ctx.save();
-      ctx.translate(250, 270);
+      ctx.translate(250, 300);
       ctx.rotate((rotationAngle * Math.PI) / 180);
-      ctx.translate(-250, -270);
+      ctx.translate(-250, -300);
       drawWheel();
       ctx.restore();
     }
