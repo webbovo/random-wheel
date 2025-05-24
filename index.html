@@ -14,8 +14,6 @@
       margin-top: 30px;
     }
     #wheelCanvas {
-      border: 4px solid #333;
-      border-radius: 50%;
       margin: 20px auto;
       display: block;
     }
@@ -83,14 +81,23 @@
     function drawArrow() {
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
-      ctx.moveTo(250, 60);     // base punta (riflessa verso il basso)
-      ctx.lineTo(235, 30);     // sinistra
-      ctx.lineTo(265, 30);     // destra
+      ctx.moveTo(250, 10);    // top point of arrow
+      ctx.lineTo(240, 30);    // bottom left
+      ctx.lineTo(260, 30);    // bottom right
       ctx.closePath();
       ctx.fill();
     }
 
     function drawWheel() {
+      // Draw outer circle border
+      ctx.beginPath();
+      ctx.arc(250, 250, 230, 0, 2 * Math.PI);
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#333";
+      ctx.stroke();
+      ctx.closePath();
+
+      // Draw segments
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
