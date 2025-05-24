@@ -79,18 +79,17 @@
     }
 
     function drawArrow() {
-      // Freccia centrata sopra la ruota tra bordo nero e ruota colorata
       const centerX = 250;
       const radius = 230;
-      const arrowHeight = 20;
-      const arrowWidth = 20;
-      const topY = 250 - radius - 6; // appena sopra il bordo nero
+      const arrowHeight = 30;
+      const arrowWidth = 30;
+      const topY = 250 - radius - 10; // spazio sopra la ruota
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
-      ctx.moveTo(centerX, topY); // punta in basso
-      ctx.lineTo(centerX - arrowWidth / 2, topY - arrowHeight);
-      ctx.lineTo(centerX + arrowWidth / 2, topY - arrowHeight);
+      ctx.moveTo(centerX, topY + arrowHeight); // punta in basso
+      ctx.lineTo(centerX - arrowWidth / 2, topY);
+      ctx.lineTo(centerX + arrowWidth / 2, topY);
       ctx.closePath();
       ctx.fill();
     }
