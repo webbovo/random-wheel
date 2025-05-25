@@ -83,11 +83,11 @@
       const radius = 230;
       const arrowHeight = 30;
       const arrowWidth = 30;
-      const topY = 250 - radius - 10; // spazio sopra la ruota
+      const topY = 250 - radius - 10;
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
-      ctx.moveTo(centerX, topY + arrowHeight); // punta in basso
+      ctx.moveTo(centerX, topY + arrowHeight);
       ctx.lineTo(centerX - arrowWidth / 2, topY);
       ctx.lineTo(centerX + arrowWidth / 2, topY);
       ctx.closePath();
@@ -95,7 +95,6 @@
     }
 
     function drawWheel() {
-      // Draw outer circle border
       ctx.beginPath();
       ctx.arc(250, 250, 230, 0, 2 * Math.PI);
       ctx.lineWidth = 6;
@@ -103,7 +102,6 @@
       ctx.stroke();
       ctx.closePath();
 
-      // Draw segments
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
@@ -149,7 +147,7 @@
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          const selected = Math.floor(((360 - (angle % 360)) / 360) * numSegments) % numSegments;
+          const selected = Math.floor(((270 - (angle % 360) + 360) % 360) / 360 * numSegments) % numSegments;
           document.getElementById("result").innerText = `Result: ${options[selected]}`;
           spinning = false;
         }
