@@ -83,7 +83,7 @@
       const radius = 230;
       const arrowHeight = 30;
       const arrowWidth = 30;
-      const topY = 250 - radius - 10;
+      const topY = 250 - radius - 20; // spostata più in alto rispetto al bordo
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
@@ -147,8 +147,9 @@
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          const selected = Math.floor(((270 - (angle % 360) + 360) % 360) / 360 * numSegments) % numSegments;
-          document.getElementById("result").innerText = `Result: ${options[selected]}`;
+          const adjustedAngle = (angle + anglePerSegment / 2) % 360;
+          const index = Math.floor(((270 - adjustedAngle + 360) % 360) / 360 * numSegments) % numSegments;
+          document.getElementById("result").innerText = `Result: ${options[index]}`;
           spinning = false;
         }
       }
