@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Random Wheel</title>
   <style>
     body {
@@ -46,7 +46,7 @@
 <body>
   <div class="container">
     <h1>Random Wheel</h1>
-    <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br>
+    <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br />
     <button onclick="updateOptions()">Update Wheel</button>
     <button onclick="resetOptions()">Reset</button>
     <canvas id="wheelCanvas" width="500" height="500"></canvas>
@@ -158,17 +158,13 @@
           const index = Math.floor(((270 - adjustedAngle + 360) % 360) / 360 * numSegments) % numSegments;
           const result = options[index];
           document.getElementById("result").innerText = `Result: ${result}`;
-
-          // Rimuove la voce estratta
           options.splice(index, 1);
           updateSegments();
           drawAll(0);
-
           if (options.length === 0) {
-            document.getElementById("result").innerText += "\nNessuna opzione rimanente.";
+            document.getElementById("result").innerText += "\\nNessuna opzione rimanente.";
             document.getElementById("spinButton").disabled = true;
           }
-
           spinning = false;
         }
       }
