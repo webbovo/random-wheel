@@ -38,13 +38,29 @@
       font-size: 22px;
       margin-top: 20px;
       color: #333;
-      word-break: break-word;
     }
     #optionsInput {
       width: 95%;
       padding: 10px;
       font-size: 16px;
       margin-bottom: 10px;
+    }
+    #history {
+      margin-top: 20px;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    #history h3 {
+      margin-bottom: 8px;
+    }
+    #historyList {
+      padding-left: 20px;
     }
     @media (max-width: 480px) {
       h1 {
@@ -69,6 +85,11 @@
     <canvas id="wheelCanvas" width="500" height="500"></canvas>
     <button id="spinButton">Spin the Wheel</button>
     <p id="result"></p>
+
+    <div id="history">
+      <h3>Storico risultati:</h3>
+      <ol id="historyList"></ol>
+    </div>
   </div>
 
   <script>
@@ -189,6 +210,7 @@
           const index = Math.floor(((270 - adjustedAngle + 360) % 360) / 360 * numSegments) % numSegments;
           const result = options[index];
           document.getElementById("result").innerText = `Result: ${result}`;
+          addToHistory(result);
           options.splice(index, 1);
           updateSegments();
           drawAll(0);
@@ -218,6 +240,7 @@
         saveOptions();
         document.getElementById("result").innerText = "";
         document.getElementById("spinButton").disabled = false;
+        clearHistory();
       } else {
         alert("Please enter at least 2 options, separated by commas.");
       }
@@ -229,6 +252,18 @@
       drawAll(0);
       document.getElementById("result").innerText = "";
       document.getElementById("spinButton").disabled = false;
+      clearHistory();
+    }
+
+    function addToHistory(result) {
+      const list = document.getElementById("historyList");
+      const item = document.createElement("li");
+      item.textContent = result;
+      list.insertBefore(item, list.firstChild); // ultimo in alto
+    }
+
+    function clearHistory() {
+      document.getElementById("historyList").innerHTML = "";
     }
 
     loadOptions();
