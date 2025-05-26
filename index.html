@@ -48,6 +48,7 @@
     <h1>Random Wheel</h1>
     <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br>
     <button onclick="updateOptions()">Update Wheel</button>
+    <button onclick="resetOptions()">Reset</button>
     <canvas id="wheelCanvas" width="500" height="500"></canvas>
     <button id="spinButton">Spin the Wheel</button>
     <p id="result"></p>
@@ -55,6 +56,7 @@
 
   <script>
     let options = [];
+    let originalOptions = [];
     const canvas = document.getElementById("wheelCanvas");
     const ctx = canvas.getContext("2d");
     let numSegments = 0;
@@ -63,19 +65,24 @@
     let spinning = false;
 
     function saveOptions() {
-      localStorage.setItem("wheelOptions", JSON.stringify(options));
+      localStorage.setItem("wheelOptions", JSON.stringify(originalOptions));
     }
 
     function loadOptions() {
       const saved = localStorage.getItem("wheelOptions");
       if (saved) {
-        options = JSON.parse(saved);
+        originalOptions = JSON.parse(saved);
       } else {
-        options = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
+        originalOptions = ["Apple", "Banana", "Cherry", "Grape", "Orange", "Lemon"];
       }
+      options = [...originalOptions];
+      updateSegments();
+      document.getElementById("optionsInput").value = originalOptions.join(", ");
+    }
+
+    function updateSegments() {
       numSegments = options.length;
       anglePerSegment = (2 * Math.PI) / numSegments;
-      document.getElementById("optionsInput").value = options.join(", ");
     }
 
     function drawArrow() {
@@ -83,7 +90,7 @@
       const radius = 230;
       const arrowHeight = 40;
       const arrowWidth = 40;
-      const topY = 250 - radius - 60; // ancora più in alto sopra il bordo
+      const topY = 250 - radius - 60;
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
@@ -132,7 +139,7 @@
     }
 
     function spinWheel() {
-      if (spinning) return;
+      if (spinning || options.length < 2) return;
       spinning = true;
       const spinAngle = Math.random() * 360 + 720;
       const duration = 3000;
@@ -149,7 +156,19 @@
         } else {
           const adjustedAngle = (angle + anglePerSegment / 2) % 360;
           const index = Math.floor(((270 - adjustedAngle + 360) % 360) / 360 * numSegments) % numSegments;
-          document.getElementById("result").innerText = `Result: ${options[index]}`;
+          const result = options[index];
+          document.getElementById("result").innerText = `Result: ${result}`;
+
+          // Rimuove la voce estratta
+          options.splice(index, 1);
+          updateSegments();
+          drawAll(0);
+
+          if (options.length === 0) {
+            document.getElementById("result").innerText += "\nNessuna opzione rimanente.";
+            document.getElementById("spinButton").disabled = true;
+          }
+
           spinning = false;
         }
       }
@@ -165,15 +184,24 @@
       const input = document.getElementById("optionsInput").value;
       const newOptions = input.split(",").map(opt => opt.trim()).filter(opt => opt);
       if (newOptions.length >= 2) {
-        options = newOptions;
-        numSegments = options.length;
-        anglePerSegment = (2 * Math.PI) / numSegments;
+        originalOptions = [...newOptions];
+        options = [...newOptions];
+        updateSegments();
         drawAll(0);
         saveOptions();
         document.getElementById("result").innerText = "";
+        document.getElementById("spinButton").disabled = false;
       } else {
         alert("Please enter at least 2 options, separated by commas.");
       }
+    }
+
+    function resetOptions() {
+      options = [...originalOptions];
+      updateSegments();
+      drawAll(0);
+      document.getElementById("result").innerText = "";
+      document.getElementById("spinButton").disabled = false;
     }
 
     loadOptions();
