@@ -9,37 +9,54 @@
       font-family: Arial, sans-serif;
       text-align: center;
       background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
     .container {
-      margin-top: 60px;
+      margin-top: 30px;
+      padding: 0 10px;
     }
-    #wheelCanvas {
-      margin: 40px auto 20px auto;
-      display: block;
+    canvas {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
     }
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
-      margin: 10px;
+      margin: 10px 5px;
     }
     button:hover {
       background-color: #0056b3;
     }
     #result {
-      font-size: 24px;
+      font-size: 22px;
       margin-top: 20px;
       color: #333;
+      word-break: break-word;
     }
     #optionsInput {
-      width: 80%;
+      width: 95%;
       padding: 10px;
       font-size: 16px;
       margin-bottom: 10px;
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 22px;
+      }
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+      #result {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -48,7 +65,7 @@
     <h1>Random Wheel</h1>
     <textarea id="optionsInput" rows="2" placeholder="Enter options separated by commas (e.g. Apple, Banana, Cherry)"></textarea><br />
     <button onclick="updateOptions()">Update Wheel</button>
-    <button onclick="resetOptions()">Reset</button>
+    <button onclick="resetOptions()">Reset</button><br />
     <canvas id="wheelCanvas" width="500" height="500"></canvas>
     <button id="spinButton">Spin the Wheel</button>
     <p id="result"></p>
@@ -63,6 +80,15 @@
     let anglePerSegment = 0;
     let angle = 0;
     let spinning = false;
+
+    function resizeCanvas() {
+      const size = Math.min(window.innerWidth * 0.9, 500);
+      canvas.width = size;
+      canvas.height = size;
+      drawAll(angle);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
 
     function saveOptions() {
       localStorage.setItem("wheelOptions", JSON.stringify(originalOptions));
@@ -86,11 +112,12 @@
     }
 
     function drawArrow() {
-      const centerX = 250;
-      const radius = 230;
-      const arrowHeight = 40;
-      const arrowWidth = 40;
-      const topY = 250 - radius - 40;
+      const size = canvas.width;
+      const centerX = size / 2;
+      const radius = size / 2 - 20;
+      const arrowHeight = size * 0.08;
+      const arrowWidth = size * 0.08;
+      const topY = centerX - radius - 10;
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
@@ -102,8 +129,12 @@
     }
 
     function drawWheel() {
+      const size = canvas.width;
+      const center = size / 2;
+      const radius = center - 20;
+
       ctx.beginPath();
-      ctx.arc(250, 250, 230, 0, 2 * Math.PI);
+      ctx.arc(center, center, radius, 0, 2 * Math.PI);
       ctx.lineWidth = 6;
       ctx.strokeStyle = "#333";
       ctx.stroke();
@@ -112,17 +143,17 @@
       for (let i = 0; i < numSegments; i++) {
         const angle = i * anglePerSegment;
         ctx.beginPath();
-        ctx.moveTo(250, 250);
-        ctx.arc(250, 250, 230, angle, angle + anglePerSegment);
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, angle, angle + anglePerSegment);
         ctx.fillStyle = `hsl(${(i * 360) / numSegments}, 100%, 75%)`;
         ctx.fill();
         ctx.save();
-        ctx.translate(250, 250);
+        ctx.translate(center, center);
         ctx.rotate(angle + anglePerSegment / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
-        ctx.font = "bold 16px Arial";
-        ctx.fillText(options[i], 210, 10);
+        ctx.font = `bold ${Math.floor(size * 0.04)}px Arial`;
+        ctx.fillText(options[i], radius - 10, 10);
         ctx.restore();
       }
     }
@@ -130,12 +161,12 @@
     function drawAll(rotationAngle) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
-      ctx.translate(250, 250);
+      ctx.translate(canvas.width / 2, canvas.height / 2);
       ctx.rotate((rotationAngle * Math.PI) / 180);
-      ctx.translate(-250, -250);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
       drawWheel();
       ctx.restore();
-      drawArrow(); // ← disegnata dopo la ruota per non essere coperta
+      drawArrow();
     }
 
     function spinWheel() {
@@ -201,6 +232,7 @@
     }
 
     loadOptions();
+    resizeCanvas();
     drawAll(0);
     document.getElementById("spinButton").addEventListener("click", spinWheel);
   </script>
