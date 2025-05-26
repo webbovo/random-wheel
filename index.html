@@ -90,7 +90,7 @@
       const radius = 230;
       const arrowHeight = 40;
       const arrowWidth = 40;
-      const topY = 250 - radius - 40; // ← visibile dentro il canvas
+      const topY = 250 - radius - 40;
 
       ctx.fillStyle = "#e74c3c";
       ctx.beginPath();
@@ -129,13 +129,13 @@
 
     function drawAll(rotationAngle) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawArrow();
       ctx.save();
       ctx.translate(250, 250);
       ctx.rotate((rotationAngle * Math.PI) / 180);
       ctx.translate(-250, -250);
       drawWheel();
       ctx.restore();
+      drawArrow(); // ← disegnata dopo la ruota per non essere coperta
     }
 
     function spinWheel() {
