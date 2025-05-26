@@ -87,7 +87,7 @@
     <p id="result"></p>
 
     <div id="history">
-      <h3>Storico risultati:</h3>
+      <h3>Spin History:</h3>
       <ol id="historyList"></ol>
     </div>
   </div>
@@ -215,7 +215,7 @@
           updateSegments();
           drawAll(0);
           if (options.length === 0) {
-            document.getElementById("result").innerText += "\\nNessuna opzione rimanente.";
+            document.getElementById("result").innerText += "\\nNo options left.";
             document.getElementById("spinButton").disabled = true;
           }
           spinning = false;
@@ -259,7 +259,7 @@
       const list = document.getElementById("historyList");
       const item = document.createElement("li");
       item.textContent = result;
-      list.insertBefore(item, list.firstChild); // ultimo in alto
+      list.insertBefore(item, list.firstChild);
     }
 
     function clearHistory() {
