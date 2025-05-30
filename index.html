@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Spin the random wheel to make random decisions or pick names. Customize your own segments!">
-  <meta name="keywords" content="random wheel, spin wheel, name picker, decision maker, wheel spinner">
-  <meta name="author" content="RandomSpinWheel.io">
+  <meta name="description" content="Spin the random wheel to make decisions, pick names or choose winners. Customize your own segments!" />
+  <meta name="keywords" content="random wheel, spin wheel, decision maker, name picker, wheel spinner" />
+  <meta name="author" content="RandomSpinWheel.io" />
   <title>Random Wheel</title>
   <style>
     body {
@@ -19,159 +19,120 @@
       margin-top: 20px;
     }
     .container {
-      padding: 20px;
+      margin-top: 30px;
     }
     canvas {
       width: 100%;
       max-width: 500px;
     }
-    input {
-      width: 80%;
-      max-width: 600px;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 5px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-    }
-    #pointer {
+    .arrow {
       width: 0;
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-top: 30px solid red;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%) rotate(180deg);
-      z-index: 10;
-    }
-    #result {
-      font-size: 18px;
-      margin-top: 20px;
+      border-top: 30px solid red; /* punta verso il basso */
+      margin: 10px auto;
+      transform: rotate(180deg);
     }
     #history {
-      font-size: 16px;
-      margin-top: 10px;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
   <h1>Random Wheel</h1>
   <div class="container">
-    <input type="text" id="items" value="Apple, Banana, Cherry, Grape, Orange, Lemon" />
-    <br />
+    <input type="text" id="items" value="Apple, Banana, Cherry, Grape, Orange, Lemon" style="width: 90%; max-width: 500px; padding: 10px; font-size: 16px;" />
+    <br /><br />
     <button onclick="updateWheel()">Update Wheel</button>
     <button onclick="resetWheel()">Reset</button>
-    <div id="pointer"></div>
-    <canvas id="wheel" width="500" height="500"></canvas>
+    <div class="arrow"></div>
+    <canvas id="wheelCanvas" width="500" height="500"></canvas>
     <br />
-    <button onclick="spin()">Spin the Wheel</button>
-    <div id="result"></div>
-    <div id="history"><strong>Spin History</strong><ul id="historyList"></ul></div>
+    <button onclick="spinWheel()">Spin the Wheel</button>
+  </div>
+  <div id="result"></div>
+  <div id="history">
+    <h2>Spin History</h2>
+    <ul id="historyList"></ul>
   </div>
 
   <script>
-    const canvas = document.getElementById('wheel');
+    const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
-    const resultEl = document.getElementById('result');
-    const historyList = document.getElementById('historyList');
-    const pointer = document.getElementById('pointer');
-    pointer.style.top = "180px"; // posizione verticale della freccia
-
     let items = [];
-    let angle = 0;
-    let isSpinning = false;
+    let angles = [];
+    let colors = ['#ff9999','#ffff99','#99ff99','#99ffff','#9999ff','#ff99ff'];
+    let spinning = false;
+    let angleOffset = 0;
 
     function drawWheel() {
       const radius = canvas.width / 2;
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
-      const segmentAngle = 2 * Math.PI / items.length;
+      const anglePerSlice = (2 * Math.PI) / items.length;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < items.length; i++) {
-        const startAngle = angle + i * segmentAngle;
-        const endAngle = startAngle + segmentAngle;
+        const startAngle = i * anglePerSlice + angleOffset;
+        const endAngle = startAngle + anglePerSlice;
+
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.fillStyle = `hsl(${i * 360 / items.length}, 100%, 75%)`;
+        ctx.fillStyle = colors[i % colors.length];
         ctx.fill();
-        ctx.stroke();
 
         ctx.save();
         ctx.translate(centerX, centerY);
-        ctx.rotate(startAngle + segmentAngle / 2);
+        ctx.rotate(startAngle + anglePerSlice / 2);
         ctx.textAlign = "right";
         ctx.fillStyle = "black";
         ctx.font = "bold 16px Arial";
-        ctx.fillText(items[i], radius - 10, 5);
+        ctx.fillText(items[i], radius - 10, 10);
         ctx.restore();
+
+        angles[i] = startAngle + anglePerSlice / 2;
       }
-    }
-
-    function spin() {
-      if (isSpinning) return;
-      isSpinning = true;
-
-      const spinTime = 3000;
-      const spinAngle = Math.random() * 360 + 1440; // almeno 4 giri
-      const spinRadians = spinAngle * Math.PI / 180;
-      const start = performance.now();
-
-      function animate(now) {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / spinTime, 1);
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        angle = (easeOut * spinRadians) % (2 * Math.PI);
-        drawWheel();
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          declareWinner();
-          isSpinning = false;
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    function declareWinner() {
-      const segmentAngle = 2 * Math.PI / items.length;
-      const adjustedAngle = (angle + Math.PI) % (2 * Math.PI); // ↘ freccia in basso
-      const winningIndex = Math.floor(adjustedAngle / segmentAngle);
-      const winner = items[winningIndex];
-
-      resultEl.innerHTML = `<strong>Result:</strong> ${winner}`;
-      const listItem = document.createElement("li");
-      listItem.textContent = winner;
-      historyList.insertBefore(listItem, historyList.firstChild);
     }
 
     function updateWheel() {
       const input = document.getElementById('items').value;
-      items = input.split(',').map(i => i.trim()).filter(i => i);
+      items = input.split(',').map(item => item.trim());
       drawWheel();
-      resultEl.textContent = '';
     }
 
     function resetWheel() {
       document.getElementById('items').value = "Apple, Banana, Cherry, Grape, Orange, Lemon";
       updateWheel();
-      historyList.innerHTML = '';
     }
 
-    // Initialize
+    function spinWheel() {
+      if (spinning || items.length === 0) return;
+      spinning = true;
+      let totalRotation = Math.random() * 360 + 1440;
+      let current = 0;
+      const increment = 10;
+      const interval = setInterval(() => {
+        current += increment;
+        angleOffset += (increment * Math.PI / 180);
+        drawWheel();
+        if (current >= totalRotation) {
+          clearInterval(interval);
+          spinning = false;
+          const normalizedAngle = (2 * Math.PI - (angleOffset % (2 * Math.PI))) % (2 * Math.PI);
+          const selectedIndex = Math.floor(normalizedAngle / (2 * Math.PI / items.length));
+          const selectedItem = items[selectedIndex];
+          document.getElementById('result').innerHTML = `<h2>Result: ${selectedItem}</h2>`;
+          const historyList = document.getElementById('historyList');
+          const listItem = document.createElement('li');
+          listItem.textContent = selectedItem;
+          historyList.insertBefore(listItem, historyList.firstChild);
+        }
+      }, 10);
+    }
+
     updateWheel();
   </script>
 </body>
