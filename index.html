@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Forced rebuild: 30 May 2025 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -118,23 +117,29 @@
     function spinWheel() {
       if (spinning) return;
       spinning = true;
-      let spinTime = 3000;
-      let spinAngle = Math.random() * Math.PI * 10 + Math.PI * 10;
+
+      let spinTime = 5000; // 5 secondi
       let start = null;
+      let totalAngle = Math.random() * Math.PI * 20 + Math.PI * 20; // più giri
+
+      function easeOut(t) {
+        return 1 - Math.pow(1 - t, 3); // ease-out cubica
+      }
 
       function animate(timestamp) {
         if (!start) start = timestamp;
         let elapsed = timestamp - start;
-        let progress = elapsed / spinTime;
+        let progress = Math.min(elapsed / spinTime, 1);
+        let easedProgress = easeOut(progress);
+
+        let currentAngle = easedProgress * totalAngle;
+        angle = (angle + currentAngle - (angle % (2 * Math.PI))) % (2 * Math.PI);
+
+        drawWheel();
 
         if (progress < 1) {
-          angle += spinAngle / spinTime;
-          drawWheel();
           requestAnimationFrame(animate);
         } else {
-          angle += spinAngle / spinTime;
-          angle %= 2 * Math.PI;
-          drawWheel();
           spinning = false;
           showResult();
         }
