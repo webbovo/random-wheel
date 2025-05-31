@@ -53,6 +53,7 @@
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
       border-top: 30px solid red;
+      border-bottom: none;
       margin: 0 auto;
       margin-bottom: -10px;
     }
@@ -128,7 +129,7 @@
         let progress = elapsed / spinTime;
 
         if (progress < 1) {
-          let easing = 1 - Math.pow(1 - progress, 3); // easing effect
+          let easing = 1 - Math.pow(1 - progress, 3);
           angle += (spinAngle / spinTime) * (1 - easing);
           drawWheel();
           requestAnimationFrame(animate);
