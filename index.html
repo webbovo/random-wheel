@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Forced rebuild: 30 May 2025 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -52,10 +51,9 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 30px solid red;
+      border-top: 30px solid red; /* punta verso il basso */
       margin: 0 auto;
-      margin-bottom: -10px;
-      transform: rotate(180deg);
+      margin-top: -10px;
     }
 
     #resultHistory {
@@ -119,29 +117,25 @@
     function spinWheel() {
       if (spinning) return;
       spinning = true;
-
-      let spinTime = 5000;
+      let spinTime = 3000;
+      let spinAngle = Math.random() * Math.PI * 10 + Math.PI * 10;
       let start = null;
-      let totalAngle = Math.random() * Math.PI * 20 + Math.PI * 20;
-
-      function easeOut(t) {
-        return 1 - Math.pow(1 - t, 3);
-      }
 
       function animate(timestamp) {
         if (!start) start = timestamp;
         let elapsed = timestamp - start;
-        let progress = Math.min(elapsed / spinTime, 1);
-        let easedProgress = easeOut(progress);
-
-        let currentAngle = easedProgress * totalAngle;
-        angle = (angle + currentAngle - (angle % (2 * Math.PI))) % (2 * Math.PI);
-
-        drawWheel();
+        let progress = elapsed / spinTime;
 
         if (progress < 1) {
+          // Easing out effect
+          let easedProgress = 1 - Math.pow(1 - progress, 3);
+          angle += (spinAngle / spinTime) * (1 - easedProgress + 0.05);
+          drawWheel();
           requestAnimationFrame(animate);
         } else {
+          angle += (spinAngle / spinTime);
+          angle %= 2 * Math.PI;
+          drawWheel();
           spinning = false;
           showResult();
         }
@@ -153,9 +147,12 @@
     function showResult() {
       let numSegments = segments.length;
       let arcSize = (2 * Math.PI) / numSegments;
-      let index = Math.floor(((2 * Math.PI - angle + Math.PI / 2) % (2 * Math.PI)) / arcSize);
-      let result = segments[index];
 
+      // Freccia verso il basso → allineata a Math.PI/2
+      let adjustedAngle = (angle + Math.PI / 2) % (2 * Math.PI);
+      let index = Math.floor(adjustedAngle / arcSize);
+
+      let result = segments[index];
       history.unshift(result);
       if (history.length > 10) history.pop();
 
@@ -178,4 +175,3 @@
   </script>
 </body>
 </html>
- 
