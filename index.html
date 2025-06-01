@@ -44,8 +44,6 @@
       display: block;
       margin: 20px auto 0;
       max-width: 90%;
-      width: 500px;
-      height: 500px;
     }
 
     #pointer {
@@ -53,7 +51,7 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-top: 30px solid red;
+      border-top: 30px solid red; /* punta in basso */
       margin: 0 auto;
       margin-bottom: -10px;
     }
@@ -119,25 +117,28 @@
     function spinWheel() {
       if (spinning) return;
       spinning = true;
-      let spinTime = 5000;
-      let spinAngle = Math.random() * Math.PI * 5 + Math.PI * 55; // realistic spin range
+      let spinTime = 7000;
+      let spinAngle = 125.66; // ≈ 20 full rotations (2π * 20)
 
       let start = null;
+
+      function easeOut(t) {
+        return 1 - Math.pow(1 - t, 3); // Cubic ease-out
+      }
 
       function animate(timestamp) {
         if (!start) start = timestamp;
         let elapsed = timestamp - start;
-        let progress = elapsed / spinTime;
+        let progress = Math.min(elapsed / spinTime, 1);
+        let easedProgress = easeOut(progress);
+
+        angle += (spinAngle * (easedProgress - easeOut(progress - 0.016))); // delta easing
+        drawWheel();
 
         if (progress < 1) {
-          const easing = 1 - Math.pow(1 - progress, 3); // smooth ease-out effect
-          angle += (spinAngle / spinTime) * (1 - easing + 0.5);
-          drawWheel();
           requestAnimationFrame(animate);
         } else {
-          angle += (spinAngle / spinTime);
           angle %= 2 * Math.PI;
-          drawWheel();
           spinning = false;
           showResult();
         }
@@ -174,4 +175,3 @@
   </script>
 </body>
 </html>
- 
