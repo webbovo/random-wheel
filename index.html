@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Forced rebuild: 30 May 2025 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -51,7 +52,7 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-top: 30px solid red; /* punta in basso */
+      border-top: 30px solid red; /* punta verso il basso */
       margin: 0 auto;
       margin-bottom: -10px;
     }
@@ -62,7 +63,6 @@
   </style>
 </head>
 <body>
-
   <h1>Random Wheel</h1>
   <textarea id="segmentsInput">Apple, Banana, Cherry, Grape, Orange, Lemon</textarea><br />
   <button onclick="updateWheel()">Update Wheel</button>
@@ -117,28 +117,24 @@
     function spinWheel() {
       if (spinning) return;
       spinning = true;
-      let spinTime = 7000;
-      let spinAngle = 125.66; // ≈ 20 full rotations (2π * 20)
-
+      let spinTime = 5000;
+      let spinAngle = Math.random() * Math.PI * 10 + Math.PI * 10; // fino a ~15 giri
       let start = null;
-
-      function easeOut(t) {
-        return 1 - Math.pow(1 - t, 3); // Cubic ease-out
-      }
 
       function animate(timestamp) {
         if (!start) start = timestamp;
         let elapsed = timestamp - start;
-        let progress = Math.min(elapsed / spinTime, 1);
-        let easedProgress = easeOut(progress);
-
-        angle += (spinAngle * (easedProgress - easeOut(progress - 0.016))); // delta easing
-        drawWheel();
+        let progress = elapsed / spinTime;
 
         if (progress < 1) {
+          const easeOut = 1 - Math.pow(1 - progress, 3);
+          angle += (spinAngle * (easeOut - (1 - Math.pow(1 - progress + 0.01, 3))));
+          drawWheel();
           requestAnimationFrame(animate);
         } else {
+          angle += spinAngle % (2 * Math.PI);
           angle %= 2 * Math.PI;
+          drawWheel();
           spinning = false;
           showResult();
         }
@@ -150,7 +146,7 @@
     function showResult() {
       let numSegments = segments.length;
       let arcSize = (2 * Math.PI) / numSegments;
-      let index = Math.floor(((2 * Math.PI - angle + Math.PI / 2) % (2 * Math.PI)) / arcSize);
+      let index = Math.floor(((2 * Math.PI - angle) % (2 * Math.PI)) / arcSize);
       let result = segments[index];
 
       history.unshift(result);
