@@ -23,7 +23,7 @@
 
     canvas {
       display: block;
-      margin: 0 auto;
+      margin: 40px auto 0; /* Aggiunto spazio sopra la ruota */
     }
 
     input[type="text"] {
@@ -53,10 +53,10 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-top: 30px solid red;
+      border-bottom: 30px solid red;
       margin: 0 auto;
-      margin-bottom: -30px;
-      transform: rotate(180deg);
+      margin-top: 20px;
+      transform: rotate(180deg); /* Punta verso il basso */
     }
 
     #history {
@@ -162,8 +162,8 @@
 
     function showResult() {
       const arcSize = (2 * Math.PI) / items.length;
-      const correctedAngle = (angle + Math.PI * 1.5) % (2 * Math.PI);
-      const index = Math.floor(correctedAngle / arcSize) % items.length;
+      const correctedAngle = (angle + Math.PI / 2) % (2 * Math.PI); // 90° = punta in basso
+      const index = Math.floor((2 * Math.PI - correctedAngle) / arcSize) % items.length;
       const result = items[index];
 
       document.getElementById("result").innerText = `Result: ${result}`;
@@ -177,4 +177,3 @@
   </script>
 </body>
 </html>
- 
