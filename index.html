@@ -23,7 +23,7 @@
 
     canvas {
       display: block;
-      margin: 40px auto 0; /* Aggiunto spazio sopra la ruota */
+      margin: 0 auto;
     }
 
     input[type="text"] {
@@ -53,10 +53,10 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 30px solid red;
+      border-top: 30px solid red;
       margin: 0 auto;
-      margin-top: 20px;
-      transform: rotate(180deg); /* Punta verso il basso */
+      margin-bottom: -30px;
+      transform: rotate(180deg);
     }
 
     #history {
@@ -86,20 +86,21 @@
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
     let items = [];
-    let angle = 0;
-    let spinning = false;
-    const colors = ["#ff9999", "#ffff99", "#99ff99", "#99ffff", "#9999ff", "#ff99ff"];
+    let angleOffset = 0;
+    let colors = ["#ff9999", "#ffff99", "#99ff99", "#99ffff", "#9999ff", "#ff99ff"];
 
-    function drawWheel() {
+    function drawWheel(currentRotation = 0) {
       const radius = canvas.width / 2;
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       const angleStep = (2 * Math.PI) / items.length;
 
       for (let i = 0; i < items.length; i++) {
-        const startAngle = angle + i * angleStep;
+        const startAngle = currentRotation + i * angleStep;
         const endAngle = startAngle + angleStep;
+
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
@@ -120,61 +121,51 @@
 
     function updateWheel() {
       items = document.getElementById("items").value.split(",").map(i => i.trim()).filter(i => i);
-      drawWheel();
+      drawWheel(angleOffset);
     }
 
     function resetWheel() {
       document.getElementById("items").value = "Apple, Banana, Cherry, Grape, Orange, Lemon";
+      angleOffset = 0;
       updateWheel();
       document.getElementById("historyList").innerHTML = "";
       document.getElementById("result").innerText = "Result: ";
     }
 
     function spinWheel() {
-      if (spinning) return;
-      spinning = true;
+      const spinDuration = 5000;
+      const extraSpins = 10;
+      const finalAngle = Math.random() * 2 * Math.PI;
+      const targetRotation = extraSpins * 2 * Math.PI + finalAngle;
+      const start = performance.now();
 
-      const spinTime = 6000;
-      const spinAngle = Math.random() * Math.PI * 8 + Math.PI * 10; // 10–18 giri
-      let start = null;
-
-      function animate(timestamp) {
-        if (!start) start = timestamp;
-        const elapsed = timestamp - start;
-        const progress = elapsed / spinTime;
-        const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / spinDuration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+        angleOffset = easeOut * targetRotation;
+        drawWheel(angleOffset);
 
         if (progress < 1) {
-          angle += (spinAngle * (1 - easedProgress)) / 20;
-          drawWheel();
           requestAnimationFrame(animate);
         } else {
-          angle += spinAngle / 20;
-          angle %= 2 * Math.PI;
-          drawWheel();
-          spinning = false;
-          showResult();
+          const angleStep = (2 * Math.PI) / items.length;
+          const normalizedAngle = (2 * Math.PI - (angleOffset % (2 * Math.PI)) + Math.PI / 2) % (2 * Math.PI);
+          const winningIndex = Math.floor(normalizedAngle / angleStep);
+          const result = items[winningIndex];
+          document.getElementById("result").innerText = `Result: ${result}`;
+
+          const historyList = document.getElementById("historyList");
+          const listItem = document.createElement("li");
+          listItem.innerText = result;
+          historyList.insertBefore(listItem, historyList.firstChild);
         }
       }
 
       requestAnimationFrame(animate);
     }
 
-    function showResult() {
-      const arcSize = (2 * Math.PI) / items.length;
-      const correctedAngle = (angle + Math.PI / 2) % (2 * Math.PI); // 90° = punta in basso
-      const index = Math.floor((2 * Math.PI - correctedAngle) / arcSize) % items.length;
-      const result = items[index];
-
-      document.getElementById("result").innerText = `Result: ${result}`;
-      const historyList = document.getElementById("historyList");
-      const listItem = document.createElement("li");
-      listItem.innerText = result;
-      historyList.insertBefore(listItem, historyList.firstChild);
-    }
-
     updateWheel();
   </script>
 </body>
 </html>
- 
