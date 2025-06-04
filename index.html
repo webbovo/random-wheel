@@ -16,10 +16,6 @@
       padding: 0;
     }
 
-    h1 {
-      margin-top: 20px;
-    }
-
     .container {
       margin: 20px auto;
       max-width: 500px;
@@ -27,7 +23,7 @@
 
     canvas {
       display: block;
-      margin: 40px auto 0; /* increased margin-top to lower the wheel */
+      margin: 40px auto 0;
     }
 
     input[type="text"] {
@@ -59,7 +55,6 @@
       border-right: 20px solid transparent;
       border-top: 30px solid red;
       margin: 0 auto;
-      margin-bottom: -20px;
       transform: rotate(180deg);
     }
 
@@ -79,7 +74,7 @@
     <div id="pointer"></div>
     <canvas id="wheel" width="400" height="400"></canvas>
     <button onclick="spinWheel()">Spin the Wheel</button>
-    <h2 id="result">Result: </h2>
+    <h2 id="result">Result:</h2>
     <div id="history">
       <h3>Spin History</h3>
       <ul id="historyList"></ul>
@@ -89,38 +84,16 @@
   <script>
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
+    const resultText = document.getElementById("result");
+    const historyList = document.getElementById("historyList");
     let items = [];
-    let angles = [];
-    let colors = ["#ff9999", "#ffff99", "#99ff99", "#99ffff", "#9999ff", "#ff99ff"];
+    let startAngle = 0;
+    let spinning = false;
+    let currentRotation = 0;
+    let totalRotation = 0;
+    let startTime;
 
-    function drawWheel() {
-      const radius = canvas.width / 2;
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const angleStep = (2 * Math.PI) / items.length;
-      angles = [];
-
-      for (let i = 0; i < items.length; i++) {
-        const angle = i * angleStep;
-        angles.push(angle);
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, angle, angle + angleStep);
-        ctx.fillStyle = colors[i % colors.length];
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(angle + angleStep / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "black";
-        ctx.font = "16px Arial";
-        ctx.fillText(items[i], radius - 10, 5);
-        ctx.restore();
-      }
-    }
+    const colors = ["#ff9999", "#ffff99", "#99ff99", "#99ffff", "#9999ff", "#ff99ff"];
 
     function updateWheel() {
       items = document.getElementById("items").value.split(",").map(i => i.trim()).filter(i => i);
@@ -130,21 +103,79 @@
     function resetWheel() {
       document.getElementById("items").value = "Apple, Banana, Cherry, Grape, Orange, Lemon";
       updateWheel();
-      document.getElementById("historyList").innerHTML = "";
-      document.getElementById("result").innerText = "Result: ";
+      resultText.innerText = "Result:";
+      historyList.innerHTML = "";
+    }
+
+    function drawWheel() {
+      const radius = canvas.width / 2;
+      const angleStep = (2 * Math.PI) / items.length;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < items.length; i++) {
+        const angle = startAngle + i * angleStep;
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, angle, angle + angleStep);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(angle + angleStep / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "black";
+        ctx.font = "16px Arial";
+        ctx.fillText(items[i], radius - 10, 5);
+        ctx.restore();
+      }
     }
 
     function spinWheel() {
-      const spinAngle = Math.random() * 2 * Math.PI;
-      const index = Math.floor((items.length - (spinAngle / (2 * Math.PI)) * items.length) % items.length);
-      const result = items[index];
-      document.getElementById("result").innerText = `Result: ${result}`;
-      const historyList = document.getElementById("historyList");
-      const listItem = document.createElement("li");
-      listItem.innerText = result;
-      historyList.insertBefore(listItem, historyList.firstChild);
+      if (spinning) return;
+      spinning = true;
+      totalRotation = Math.PI * 20 + Math.random() * Math.PI * 2;
+      currentRotation = 0;
+      startTime = null;
+      requestAnimationFrame(animateSpin);
+    }
+
+    function animateSpin(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const duration = 5000;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutCubic(progress);
+
+      currentRotation = eased * totalRotation;
+      startAngle = currentRotation % (2 * Math.PI);
 
       drawWheel();
+
+      if (progress < 1) {
+        requestAnimationFrame(animateSpin);
+      } else {
+        spinning = false;
+        showResult();
+      }
+    }
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function showResult() {
+      const anglePerSegment = (2 * Math.PI) / items.length;
+      const adjustedAngle = (2 * Math.PI - startAngle + anglePerSegment / 2) % (2 * Math.PI);
+      const index = Math.floor(adjustedAngle / anglePerSegment);
+      const selected = items[index];
+
+      resultText.innerText = `Result: ${selected}`;
+
+      const listItem = document.createElement("li");
+      listItem.innerText = selected;
+      historyList.insertBefore(listItem, historyList.firstChild);
     }
 
     updateWheel();
