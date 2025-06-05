@@ -21,6 +21,23 @@
       padding: 0;
     }
 
+    .nav {
+      background-color: #007bff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav a:hover {
+      text-decoration: underline;
+    }
+
     h1 {
       margin-top: 20px;
     }
@@ -62,9 +79,10 @@
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 30px solid red; /* punta in basso */
+      border-top: 30px solid red;
       margin: 0 auto;
-      margin-bottom: -10px;
+      margin-bottom: -20px;
+      transform: rotate(180deg);
     }
 
     #history {
@@ -73,6 +91,12 @@
   </style>
 </head>
 <body>
+  <div class="nav">
+    <a href="index.html">Home</a> |
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="contact.html">Contatti</a>
+  </div>
+
   <div class="container">
     <h1>Random Wheel</h1>
     <input type="text" id="items" value="Apple, Banana, Cherry, Grape, Orange, Lemon" />
@@ -98,8 +122,7 @@
     let colors = ["#ff9999", "#ffff99", "#99ff99", "#99ffff", "#9999ff", "#ff99ff"];
     let rotation = 0;
     let isSpinning = false;
-    let startRotation = 0;
-    let targetRotation = 0;
+    let targetAngle = 0;
 
     function drawWheel() {
       const radius = canvas.width / 2;
@@ -151,23 +174,22 @@
       isSpinning = true;
       const spins = 5 + Math.random() * 3;
       const extra = Math.random() * 2 * Math.PI;
-      startRotation = rotation;
-      targetRotation = rotation + spins * 2 * Math.PI + extra;
+      targetAngle = rotation + spins * 2 * Math.PI + extra;
       const duration = 5000;
       const start = performance.now();
 
       function animate(time) {
         const elapsed = time - start;
         const progress = Math.min(elapsed / duration, 1);
-        const easedProgress = 1 - Math.pow(1 - progress, 4);
-        rotation = startRotation + (targetRotation - startRotation) * easedProgress;
+        const easing = 1 - Math.pow(1 - progress, 4);
+        rotation = rotation + (targetAngle - rotation) * easing;
         drawWheel();
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           isSpinning = false;
-          rotation = targetRotation % (2 * Math.PI);
+          rotation = targetAngle % (2 * Math.PI);
           showResult();
         }
       }
@@ -177,7 +199,7 @@
 
     function showResult() {
       const arcSize = (2 * Math.PI) / items.length;
-      const index = items.length - Math.floor(((rotation + arcSize / 2) % (2 * Math.PI)) / arcSize) - 1;
+      const index = items.length - Math.floor((rotation + arcSize / 2) % (2 * Math.PI) / arcSize) - 1;
       const result = items[index];
       document.getElementById("result").innerText = `Result: ${result}`;
       const historyList = document.getElementById("historyList");
