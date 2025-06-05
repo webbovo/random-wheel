@@ -196,9 +196,10 @@
 
     function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const pointerAngle = (rotation + Math.PI / 2) % (2 * Math.PI);
-  const index = Math.floor(pointerAngle / arcSize) % items.length;
+  const adjustedRotation = (rotation + Math.PI * 1.5) % (2 * Math.PI); // correzione per freccia verso l'alto
+  const index = Math.floor(adjustedRotation / arcSize) % items.length;
   const result = items[index];
+
   document.getElementById("result").innerText = `Result: ${result}`;
   const historyList = document.getElementById("historyList");
   const listItem = document.createElement("li");
