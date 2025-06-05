@@ -197,7 +197,7 @@
 
    function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const adjustedRotation = rotation % (2 * Math.PI);
+  const adjustedRotation = (rotation - Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI); // compensiamo la rotazione
   const index = Math.floor(adjustedRotation / arcSize) % items.length;
   const result = items[index];
 
