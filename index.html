@@ -196,7 +196,8 @@
 
     function showResult() {
       const arcSize = (2 * Math.PI) / items.length;
-      const index = items.length - Math.floor((rotation + arcSize / 2) % (2 * Math.PI) / arcSize) - 1;
+     const adjustedRotation = (rotation + Math.PI / 2) % (2 * Math.PI);
+    const index = Math.floor(adjustedRotation / arcSize) % items.length;
       const result = items[index];
       document.getElementById("result").innerText = `Result: ${result}`;
       const historyList = document.getElementById("historyList");
