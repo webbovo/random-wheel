@@ -196,7 +196,7 @@
 
     function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const adjustedRotation = (rotation + Math.PI * 1.5) % (2 * Math.PI); // correzione per freccia verso l'alto
+  const adjustedRotation = (rotation + Math.PI / 2) % (2 * Math.PI); // correzione per freccia verso il basso
   const index = Math.floor(adjustedRotation / arcSize) % items.length;
   const result = items[index];
 
