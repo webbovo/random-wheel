@@ -197,7 +197,11 @@
 
    function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const adjustedRotation = (rotation + Math.PI / 2) % (2 * Math.PI); // punta della freccia in alto
+
+  // La freccia è in basso (180°), quindi aggiungiamo Math.PI all'angolo finale
+  const adjustedRotation = (rotation + Math.PI) % (2 * Math.PI);
+
+  // Calcola l'indice dell'elemento selezionato
   const index = Math.floor(adjustedRotation / arcSize) % items.length;
   const result = items[index];
 
