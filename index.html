@@ -197,9 +197,9 @@
 
    function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const pointerAngle = Math.PI; // 180° in radianti
+  const pointerAngle = Math.PI; // 180° in radianti, freccia in alto
   const adjustedRotation = (rotation + pointerAngle) % (2 * Math.PI);
-  const index = Math.floor((items.length - (adjustedRotation / arcSize)) % items.length);
+  const index = Math.floor(adjustedRotation / arcSize) % items.length;
   const result = items[index];
 
   document.getElementById("result").innerText = `Result: ${result}`;
