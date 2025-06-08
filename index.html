@@ -197,9 +197,14 @@
 
    function showResult() {
   const arcSize = (2 * Math.PI) / items.length;
-  const pointerAngle = Math.PI; // 180° in radianti, freccia in alto
+  const pointerAngle = 0; // Freccia in alto (0 radianti)
+
+  // Calcola la rotazione finale tenendo conto della posizione della freccia
   const adjustedRotation = (rotation + pointerAngle) % (2 * Math.PI);
-  const index = Math.floor(adjustedRotation / arcSize) % items.length;
+  
+  // Calcola l'indice correttamente senza rischio di negatività
+  const index = (Math.floor(items.length - (adjustedRotation / arcSize)) % items.length + items.length) % items.length;
+  
   const result = items[index];
 
   document.getElementById("result").innerText = `Result: ${result}`;
