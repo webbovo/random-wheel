@@ -121,7 +121,11 @@
       <button onclick="resetWheel()">Reset</button>
     </div>
     <div id="pointer"></div>
-    <canvas id="wheel" width="400" height="400"></canvas>
+    <canvas id="wheel" width="400" height="400" aria-describedby="wheel-description"></canvas>
+    <p id="wheel-description" style="position:absolute; left:-9999px;">
+  Interactive spinning wheel used to randomly select one of the entered items. The arrow at the top points to the selected result when the wheel stops.
+</p>
+
     <button onclick="spinWheel()">Spin the Wheel</button>
     <h2 id="result">Result: </h2>
     <div id="history">
