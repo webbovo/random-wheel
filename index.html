@@ -89,13 +89,23 @@
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="contact.html">Contacts</a>
-  </nav>
+ <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #007bff;">
+  <div style="display: flex; align-items: center;">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white" style="margin-right: 10px;" viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 
+               0-4.42 3.58-8 8-8 4.42 0 8 3.58 8 8 0 4.42-3.58 8-8 8z"/>
+      <circle cx="12" cy="12" r="5" fill="#007bff"/>
+    </svg>
+    <span style="color: white; font-weight: bold; font-size: 20px;">RandomSpinWheel.io</span>
+  </div>
+  <div>
+    <a href="index.html" style="color: white; margin: 0 15px; text-decoration: none; font-weight: bold;">Home</a>
+    <a href="privacy.html" style="color: white; margin: 0 15px; text-decoration: none; font-weight: bold;">Privacy Policy</a>
+    <a href="contact.html" style="color: white; margin: 0 15px; text-decoration: none; font-weight: bold;">Contacts</a>
+  </div>
+</nav>
 
-  <div class="container">
+ <div class="container">
     <h1>Random Wheel</h1>
     <p>Create your own custom wheel and let chance decide!</p>
     <input type="text" id="items" value="Apple, Banana, Cherry, Grape, Orange, Lemon" />
